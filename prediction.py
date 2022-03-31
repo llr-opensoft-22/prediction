@@ -100,26 +100,11 @@ def getPredict(val_t):
     pred = model(val_t).item()
     return pred
 
-
-# Get required data
-def getData():
-    gc = gspread.authorize(credentials)
-    spreadsheet_key = '1Bp0UY4R4MQK5NfBCcUMumBearNc_9UqppaqCy7Ei5qk'
-
-    df = pd.read_csv(
-        f"https://docs.google.com/spreadsheets/d/{spreadsheet_key}/export?format=csv", index_col=0)
-    n = len(df)-seq_length
-    val = df.iloc[n:n+seq_length].values
-    val = np.expand_dims(val, axis=0)
-    val_t = Variable(torch.Tensor(val))
-    return val_t, df
-
-
 # Get the data and generate predictions for the next
 # hour. Send message if required. Update the Google Sheet
 # that Grafana gets data from
 def run():
-    val_t, df = getData()  # Get Data From Promethues
+    val_t, df = getDataPrometheus()  # Get Data From Promethues
 
     pred = getPredict(val_t)  # Predict Using DL Model
 
